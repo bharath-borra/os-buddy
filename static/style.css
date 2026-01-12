@@ -92,6 +92,37 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     color: #cbd5e1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.delete-btn {
+    opacity: 0;
+    color: #94a3b8;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+#history-list li:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    color: #ef4444;
+    /* Red */
+    background: rgba(239, 68, 68, 0.1);
 }
 
 #history-list li:hover {
@@ -223,6 +254,14 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
 /* Input Area */
 .input-area {
     padding: 30px;
@@ -322,4 +361,104 @@ body {
 
 .content th {
     background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- Mobile Responsiveness --- */
+
+/* Hide mobile menu button by default (desktop) */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 15px;
+    z-index: 20;
+    /* Above header content */
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    /* Stack sidebar and chat? No, Sidebar Drawer pattern */
+
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        /* Hide off-screen */
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        transition: left 0.3s ease;
+        background: #0f172a;
+        /* Solid background for drawer */
+        width: 250px;
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar.open {
+        left: 0;
+        /* Slide in */
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .chat-header {
+        padding-left: 50px;
+        /* Space for menu button */
+    }
+
+    .chat-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .chat-header p {
+        font-size: 0.8rem;
+    }
+
+    /* Fix message container height */
+    .chat-area {
+        width: 100%;
+        height: 100vh;
+    }
+
+    .messages-container {
+        padding: 15px;
+        /* Reduce padding */
+    }
+
+    /* Fix Input area being squished or hidden */
+    .input-area {
+        padding: 15px;
+        background: #0f172a;
+        /* Ensure background opacity doesn't show weirdness */
+    }
+
+    .input-wrapper {
+        padding: 5px;
+    }
+
+    #user-input {
+        font-size: 16px;
+        /* Prevent iOS zoom */
+    }
+
+    /* Overlay for when sidebar is open */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 90;
+        display: none;
+    }
+
+    .overlay.active {
+        display: block;
+    }
 }

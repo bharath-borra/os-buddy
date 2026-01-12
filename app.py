@@ -2,6 +2,7 @@ import json
 import uuid
 import os
 import time
+from datetime import datetime, timezone
 from flask import Flask, render_template, request, jsonify
 from agent import agent
 from dotenv import load_dotenv
@@ -22,7 +23,8 @@ def home():
 
 @app.route("/sessions", methods=["GET"])
 def get_sessions():
-    sessions = db.get_sessions()
+    user_id = request.headers.get("X-User-ID")
+    sessions = db.get_sessions(user_id)
     # Format for frontend
     formatted = []
     for s in sessions:
@@ -35,12 +37,28 @@ def get_sessions():
 
 @app.route("/sessions/new", methods=["POST"])
 def new_session():
-    return jsonify({"id": str(uuid.uuid4())})
+    user_id = request.headers.get("X-User-ID")
+    # Create valid empty session
+    session_id = str(uuid.uuid4())
+    session_data = {
+        "title": "New Chat",
+        "timestamp": time.time(),
+        "last_active": datetime.now(timezone.utc),
+        "messages": []
+    }
+    db.save_session(session_id, session_data, user_id)
+    return jsonify({"id": session_id})
 
 @app.route("/sessions/<session_id>", methods=["GET"])
 def get_session_chat(session_id):
     session = db.get_session(session_id)
     return jsonify(session)
+
+@app.route("/sessions/<session_id>", methods=["DELETE"])
+def delete_session_route(session_id):
+    user_id = request.headers.get("X-User-ID")
+    success = db.delete_session(session_id, user_id)
+    return jsonify({"success": success})
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -69,10 +87,12 @@ def chat():
             session_data = {
                 "title": user_message[:30] + "...",
                 "timestamp": time.time(),
+                "last_active": datetime.now(timezone.utc),
                 "messages": []
             }
         
         session_data["timestamp"] = time.time()
+        session_data["last_active"] = datetime.now(timezone.utc)
         
         # Append User Msg
         session_data["messages"].append({"role": "user", "content": user_message})
@@ -88,7 +108,8 @@ def chat():
              session_data["title"] = user_message[:30] + "..."
 
         # Save to MongoDB
-        db.save_session(session_id, session_data)
+        user_id = request.headers.get("X-User-ID")
+        db.save_session(session_id, session_data, user_id)
         
         return jsonify({
             "response": response, 
