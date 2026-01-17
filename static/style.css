@@ -10,6 +10,8 @@ body {
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
     color: #e2e8f0;
     height: 100vh;
+    height: 100dvh;
+    /* Dynamic container for mobile bars */
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -20,6 +22,7 @@ body {
 .main-container {
     display: flex;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
@@ -404,6 +407,19 @@ body {
 
     .mobile-menu-btn {
         display: block;
+    }
+
+    /* Make delete buttons always visible on touch devices */
+    .delete-btn {
+        opacity: 1 !important;
+        color: #ef4444 !important;
+        /* Always red on mobile to show it's active */
+        padding: 8px 12px;
+        /* Large touch target */
+        margin-left: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        /* Slight background */
+        border-radius: 6px;
     }
 
     .chat-header {

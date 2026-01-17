@@ -40,31 +40,22 @@ def agent(user_message, chat_history):
         3. Use the Conversation History to understand context (e.g. "What about threads?" refers to previous topic).
         
         DIAGRAM GENERATION RULES:
-        1. If the user asks for a diagram, YOU MUST generate a Mermaid.js diagram.
-        2. STRICT SYNTAX RULES:
-           - Use `graph TD` or `graph LR` for flowcharts.
-           - Use `sequenceDiagram` for interaction flows.
-           - Use `gantt` ONLY for scheduling.
-           - DO NOT use `block-beta` or other experimental features.
-           - DO NOT add comments (%%) inside the code block.
+        1. If key concepts are discussed, generate a Mermaid.js diagram.
+        2. SYNTAX "GOLDEN RULES" (CRITICAL):
+           - ALWAYS use double codes for node labels: `id["Label Text"]`. NEVER `id[Label Text]`.
+           - AVOID special characters inside quotes if possible.
+           - Use `graph TD` (Top-Down) or `graph LR` (Left-Right) for flows.
+           - Use `sequenceDiagram` for steps.
+           - FOR GANTT CHARTS (Scheduling):
+             - MUST use `dateFormat s` and `axisFormat %s`.
+             - Start from 0. Do NOT use dates (2024-...).
+             - Example: `Process P1 : active, 0, 5s`
+           - FOR MLFQ / Multilevel Queue: Use `graph TD` (Flowchart) only. Do NOT use Gantt or Block diagrams for logic explanation.
         3. EXAMPLES:
-           - Scheduling (Gantt):
-             ```mermaid
-             gantt
-             title FCFS
-             dateFormat s
-             axisFormat %s
-             Process P1 : 0, 5
-             Process P2 : 5, 3
-             ```
-           - Paging (Flowchart):
-             ```mermaid
-             graph LR
-             CPU[CPU] -->|Logical Addr| MMU{{MMU}}
-             MMU -->|Physical Addr| RAM[Memory]
-             ```
-        4. Keep diagrams SIMPLE. No complex styling.
-        5. DO NOT generate diagrams for non-OS topics.
+           - Process: `graph LR; A["Start"] --> B["Process"];`
+           - Hierarchy: `graph TD; Parent["Parent"] --> Child["Child"];`
+        4. Do NOT use `block-beta` or `mindmap`.
+        5. Output ONLY valid Markdown with `mermaid` tag.
         
         Conversation History:
         {history_text}

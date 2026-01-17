@@ -280,11 +280,29 @@ function appendMessage(type, text) {
             });
         } catch (err) {
             console.error("Mermaid Render Error:", err);
-            // Fallback: Show raw code if render fails
+            // Fallback: Show user friendly message + code
             msgDiv.querySelectorAll('.mermaid').forEach(el => {
-                el.style.whiteSpace = 'pre-wrap';
-                el.style.fontFamily = 'monospace';
-                el.innerText = "Diagram Error. Raw Code:\n" + el.textContent;
+                const rawCode = el.textContent;
+                el.style.display = 'none'; // Hide broken div
+
+                // Create fallback container
+                const errorDiv = document.createElement('div');
+                errorDiv.style.color = '#ef4444';
+                errorDiv.style.padding = '10px';
+                errorDiv.style.border = '1px solid #ef4444';
+                errorDiv.style.borderRadius = '8px';
+                errorDiv.style.marginTop = '10px';
+                errorDiv.innerHTML = `<strong>⚠️ Diagram Error</strong><br><small>We couldn't draw the chart, but here is the data:</small>`;
+
+                const pre = document.createElement('pre');
+                pre.style.background = 'rgba(0,0,0,0.3)';
+                pre.style.padding = '10px';
+                pre.style.marginTop = '5px';
+                pre.style.overflowX = 'auto';
+                pre.textContent = rawCode;
+
+                errorDiv.appendChild(pre);
+                el.parentNode.appendChild(errorDiv); // Inject fallback
             });
         }
     }
