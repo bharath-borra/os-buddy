@@ -1,5 +1,7 @@
 # 🎓 OS Tutor Buddy
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-FF4F00?style=for-the-badge&logo=render&logoColor=white)](https://os-buddy.onrender.com/)
+
 **OS Tutor Buddy** is an intelligent, AI-powered teaching assistant aimed at helping students master **Operating Systems concepts**. Built with **Llama 3 (via Groq)** and **LangChain**, it acts as a strict but helpful tutor, answering questions, generating diagrams, and referencing course materials via RAG (Retrieval-Augmented Generation).
 
 ---
@@ -28,7 +30,24 @@
 
 ---
 
-## ⚙️ Installation & Setup
+## 📂 Project Structure
+
+```text
+├── app.py                 # Main Flask Application & Routes
+├── agent.py               # AI Tutor Logic (System Prompts, Guardrails)
+├── tools/
+│   ├── db.py             # Hybrid Storage Manager (Mongo + Local Fallback)
+│   ├── pdf_query_tools.py # RAG Implementation (FAISS + PDF Indexing)
+│   └── data/             # Folder for PDF Textbooks
+├── static/                # CSS, JS, Images
+└── templates/             # HTML Templates
+```
+
+---
+
+## 💻 For Developers: Installation & Setup
+
+If you want to run this project locally for development:
 
 1.  **Clone the Repository**
     ```bash
