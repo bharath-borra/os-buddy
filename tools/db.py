@@ -119,8 +119,18 @@ class MongoDBManager:
             history = self._load_local()
             history[session_id] = session_data
             self._save_local(history)
-            self._save_local(history)
             return
+
+        try:
+            self.db.sessions.update_one(
+                {"id": session_id},
+                {"$set": session_data},
+                upsert=True
+            )
+        except Exception as e:
+            print(f"MongoDB Write Failed: {e}. Switching to Local.")
+            self.use_local = True
+            self.save_session(session_id, session_data, user_id)
 
     def delete_session(self, session_id, user_id=None):
         if self.use_local:
@@ -144,15 +154,4 @@ class MongoDBManager:
             print(f"MongoDB Delete Failed: {e}")
             return False
 
-        try:
-            self.db.sessions.update_one(
-                {"id": session_id},
-                {"$set": session_data},
-                upsert=True
-            )
-        except Exception as e:
-            print(f"MongoDB Write Failed: {e}. Switching to Local.")
-            self.use_local = True
-            print(f"MongoDB Write Failed: {e}. Switching to Local.")
-            self.use_local = True
-            self.save_session(session_id, session_data, user_id)
+
