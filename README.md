@@ -9,7 +9,8 @@
 ## 🚀 Key Features
 
 *   **🧠 Advanced AI Tutor**: Powered by **Llama 3.3 70B** for high-quality, accurate explanations of complex implementation details (concurrency, scheduling, memory management).
-*   **📚 RAG (Retrieval-Augmented Generation)**: Automatically scans, indexes, and retrieves knowledge from PDF textbooks found in the `tools/data/` folder, ensuring answers are grounded in your specific curriculum.
+*   **�️ Strict Domain Focus**: The AI is **strictly scoped** to Operating Systems topics. It actively **rejects unrelated queries** (like sports, movies, or general knowledge) to ensure the study session remains focused.
+*   **�📚 RAG (Retrieval-Augmented Generation)**: Automatically scans, indexes, and retrieves knowledge from PDF textbooks found in the `tools/data/` folder, ensuring answers are grounded in your specific curriculum.
 *   **💾 Hybrid Storage System**: unique **Dual-Layer Persistence** architecture:
     *   **Primary**: Saves chat history to **MongoDB Atlas**.
     *   **Fallback**: Automatically switches to **Local File Storage** (`chat_history.json`) if the database connection drops, ensuring no data is ever lost.
