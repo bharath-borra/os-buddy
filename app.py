@@ -21,6 +21,12 @@ db = MongoDBManager()
 def home():
     return render_template("index.html")
 
+@app.route("/healthz")
+def health_check():
+    return jsonify({"status": "ok", "message": "I am awake!"})
+
+
+
 @app.route("/sessions", methods=["GET"])
 def get_sessions():
     user_id = request.headers.get("X-User-ID")
