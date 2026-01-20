@@ -95,6 +95,15 @@ function renderHistoryList(sessions) {
 }
 
 async function startNewChat() {
+    // 4. Instant UI Feedback
+    const container = document.getElementById('messages-container');
+    container.innerHTML = `
+        <div class="message ai-message">
+            <div class="avatar">AI</div>
+            <div class="content"><span class="loader">Starting new chat...</span></div>
+        </div>
+    `;
+
     try {
         const res = await fetch('/sessions/new', {
             method: 'POST',
@@ -122,6 +131,20 @@ async function startNewChat() {
 
 async function loadSession(sessionId) {
     currentSessionId = sessionId;
+    // 4. Instant UI Feedback (Optimistic)
+    // Clear chat & Show loader IMMEDIATELY
+    const container = document.getElementById('messages-container');
+    container.innerHTML = `
+        <div class="message ai-message" id="temp-loading">
+            <div class="avatar">AI</div>
+            <div class="content"><span class="loader">Loading history...</span></div>
+        </div>
+    `;
+
+    // Highlight sidebar immediately
+    document.querySelectorAll('#history-list li').forEach(li => li.classList.remove('active'));
+    // (Optional: find the li by ID if we had it, but for now just clear active)
+
     // Fetch History
     try {
         const res = await fetch(`/sessions/${sessionId}`, {
@@ -130,8 +153,7 @@ async function loadSession(sessionId) {
         const data = await res.json();
 
         // Render Messages
-        const container = document.getElementById('messages-container');
-        container.innerHTML = '';
+        container.innerHTML = ''; // Clear loader
 
         if (data.messages && data.messages.length > 0) {
             data.messages.forEach(msg => {
@@ -145,11 +167,18 @@ async function loadSession(sessionId) {
                 </div>
             `;
         }
-        fetchSessions(); // Update active state
+        // Background update of session list (don't block UI)
+        fetchSessions().then(() => {
+            // Re-highlight active after list refresh
+            const items = document.querySelectorAll('#history-list li');
+            // Logic to find and highlight currentSessionId would go here if needed
+        });
     } catch (e) {
         console.error(e);
+        container.innerHTML = `<div class="error">Failed to load chat.</div>`;
     }
 }
+
 
 async function deleteSession(sessionId) {
     if (!confirm("Delete this chat?")) return;
