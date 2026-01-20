@@ -76,6 +76,7 @@ def agent(user_message, chat_history):
         - Node IDs: NO spaces (e.g., `id["Label"]`).
         - Strings: ALWAYS double quotes.
         - NO special chars in IDs.
+        - For Sequence Diagrams: Use "participant Alias as Label". DO NOT use "participant Alias["Label"]".
         
         Conversation:
         {history_text}
