@@ -36,11 +36,26 @@ def agent(user_message, chat_history):
     try:
         llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0, groq_api_key=api_key)
         
-        # 1. Router Logic (Simple Heuristic or Mini-LLM)
-        # For speed, we will use a "technical keyword" heuristic + simple intent check
-        technical_keywords = ["process", "thread", "schedule", "deadlock", "memory", "paging", "kernel", "semaphore", "disk", "fcfs", "sjf", "round robin"]
-        is_technical = any(kw in user_message.lower() for kw in technical_keywords) or len(user_message.split()) > 3
+        # 1. Router Logic (Strict)
+        # Check against technical keywords. If no match, treat as "General Chat" unless context implies OS.
+        technical_keywords = [
+            "process", "thread", "schedule", "deadlock", "memory", "paging", "kernel", "semaphore", "disk", 
+            "fcfs", "sjf", "round robin", "os", "operating system", "linux", "windows", "cpu", "cache", 
+            "virtual", "file system", "interrupt", "system call", "mutex", "hardware", "software", "code", 
+            "programming", "computer", "server", "client", "network", "boot", "algorithm", "concurrency",
+            "synchronization", "banker", "page", "frame", "segmentation", "io", "driver", "monitor"
+        ]
         
+        is_technical = any(kw in user_message.lower() for kw in technical_keywords)
+        
+        # GUARDRAIL: Hard Block for non-technical queries that aren't greetings
+        if not is_technical:
+            greetings = ["hi", "hello", "hey", "greetings", "good morning", "start", "help", "who are you"]
+            is_greeting = any(g == user_message.lower().strip() or user_message.lower().startswith(g + " ") for g in greetings)
+            
+            if not is_greeting:
+                return "🚫 **Out of Scope**: I am strictly programmed to answer questions about **Operating Systems** only (e.g., Paging, Scheduling, Deadlocks). I cannot assist with Geography, General Knowledge, or other topics.", "Blocked by Keyword Guardrail"
+
         context_text = ""
         mode = "Direct LLM"
 
@@ -62,9 +77,18 @@ def agent(user_message, chat_history):
             history_text += f"{role}: {msg.get('content', '')}\n"
 
         system_prompt = f"""You are OS Buddy, an expert Operating Systems Tutor based on the Silberschatz textbook.
+        
+        SCOPE:
+        You are a SPECIALIZED Operating Systems Tutor.
+        You MUST ONLY answer questions directly related to Operating Systems (Concepts, Algorithms, Kernels, Memory, Concurrency, etc.).
+        
+        STRICT REFUSAL POLICY:
+        If the user asks about ANYTHING else (including General Python, Web Development, Geography, Biology, Sports, Politics, or General Knowledge), you must politely but FIRMLY REFUSE.
+        
+        Refusal Template: "I am strictly programmed to help with Operating Systems only. I cannot answer questions about [topic]. Please ask me about topics like Paging, Scheduling, or Deadlocks."
 
         CONTEXT FROM TEXTBOOK:
-        {context_text if context_text else "No textbook context available. Answer effectively using your general knowledge."}
+        {context_text if context_text else "No specific textbook context found."}
 
         INSTRUCTIONS:
         1. If Context is present, USE IT. It contains the exact definitions and steps.
