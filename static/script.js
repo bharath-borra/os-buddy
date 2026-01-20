@@ -259,7 +259,22 @@ function appendMessage(type, text) {
         // and trim whitespace which can confuse mermaid
         const txt = document.createElement("textarea");
         txt.innerHTML = code;
-        code = txt.value.trim();
+        code = txt.value.trim()
+            .replace(/\u00A0/g, ' ')
+            .replace(/[\u201C\u201D]/g, '"')
+            .replace(/[\u2018\u2019]/g, "'")
+            .replace(/\|\>/g, '|') // Fix arrow ending
+            .replace(/(-->\|.*?)\|>/g, '$1|');
+
+        // SPECIAL FIX: If Sequence Diagram, fix mixed syntax (Flowchart arrows in Sequence)
+        if (code.includes('sequenceDiagram')) {
+            // Replace "A-->|text|B" with "A->>B: text"
+            // Regex breakdown: (\S+) = Node A, -->\|(.*?)\| = arrow+label, (\S+) = Node B
+            code = code.replace(/(\S+)\s*-->\|(.*?)\|\s*(\S+)/g, '$1->>$3: $2');
+
+            // Fix "Note over A,B,C" -> "Note over A,B" (Truncate to 2 to avoid crashing)
+            code = code.replace(/Note over ([^,]+),([^,]+),([^:]+):/g, 'Note over $1,$2:');
+        }
 
         const div = document.createElement('div');
         div.classList.add('mermaid');
@@ -293,7 +308,7 @@ function appendMessage(type, text) {
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'mermaid-error';
                     errorDiv.style.cssText = 'color: #ef4444; padding: 10px; border: 1px solid #ef4444; border-radius: 8px; margin-top: 10px;';
-                    errorDiv.innerHTML = `<strong>⚠️ Diagram Error</strong><br><small>The AI generated invalid syntax. Here is the raw code:</small>`;
+                    errorDiv.innerHTML = `<strong>⚠️ Diagram Error</strong><br><small>${err.message}</small><br><small>The AI generated invalid syntax. Here is the raw code:</small>`;
 
                     const pre = document.createElement('pre');
                     pre.style.cssText = 'background: rgba(0,0,0,0.3); padding: 10px; margin-top: 5px; overflow-x: auto; white-space: pre-wrap;';
@@ -304,6 +319,8 @@ function appendMessage(type, text) {
                     el.classList.remove('mermaid');
                 }
             }
+
+
 
             if (validNodes.length > 0) {
                 try {

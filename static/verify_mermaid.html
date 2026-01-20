@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid Verification Suite</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .test-case {
+            margin-bottom: 30px;
+            border: 1px solid #444;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .status {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .code-compare {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 48%;
+            height: 100px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #555;
+            font-family: monospace;
+            padding: 5px;
+        }
+
+        .mermaid {
+            background: #fff;
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Mermaid Fix Verification Suite</h1>
+    <p>Testing robust sanitization logic against known AI failures.</p>
+
+    <div id="test-container"></div>
+
+    <script>
+        // 1. The Sanitization Function (Identical to script.js fix)
+        function sanitizeMermaidCode(rawCode) {
+            let code = rawCode.trim()
+                .replace(/\u00A0/g, ' ') // Non-breaking spaces
+                .replace(/[\u201C\u201D]/g, '"') // Smart double quotes
+                .replace(/[\u2018\u2019]/g, "'") // Smart single quotes
+                .replace(/\|\>/g, '|') // Fix arrow ending
+                .replace(/(-->\|.*?) \|> /g, '$1|'); / / Safer regex for arrows
+
+        // SPECIAL FIX: If Sequence Diagram, fix mixed syntax
+        if (code.includes('sequenceDiagram')) {
+                    // Replace "A-->|text|B" with "A->>B: text"
+                    code = code.replace(/(\S+)\s*-->\|(.*?)\|\s*(\S+)/g, '$1->>$3: $2');
+                    // Fix "Note over A,B,C" -> "Note over A,B"
+                    code = code.replace(/Note over ([^,]+),([^,]+),([^:]+):/g, 'Note over $1,$2:');
+                }
+            return code;
+        }
+
+        // 2. Test Cases
+        const testCases = [
+            {
+                name: "Sanity Check (Valid Graph)",
+                input: `graph TD\n A["Start"] --> B["End"]`
+            },
+            {
+                name: "Fix 1: Invalid Arrow Syntax (|>) - The Logic Error",
+                input: `graph TD\n A["Start"] -->|Label|> B["End"]`
+            },
+            {
+                name: "Fix 2: Smart Quotes - The Copy/Paste Error",
+                input: `graph TD\n A[“Start”] --> B[‘End’]`
+            },
+            {
+                name: "Fix 3: Mixed Issues (Invalid Arrow + Smart Quotes)",
+                input: `graph TD\n A[“Node A”] -->|Label|> B[“Node B”]`
+            },
+            {
+                name: "Fix 4: Sequence Diagram Panic (Mixed Syntax)",
+                input: `sequenceDiagram\n Participant A\n Participant B\n A-->|Message|B\n B-->|Reply|A`
+            },
+            {
+                name: "Fix 5: Note Overload (Too many participants)",
+                input: `sequenceDiagram\n Note over P1,P2,P3: This crashes Mermaid`
+            }
+        ];
+
+        // 3. Test Runner
+        const container = document.getElementById('test-container');
+
+        testCases.forEach((test, index) => {
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-case';
+
+            const sanitized = sanitizeMermaidCode(test.input);
+
+            testDiv.innerHTML = `
+            <h3>Test ${index + 1}: ${test.name}</h3>
+            <div class="code-compare">
+                <div>
+                    <strong>Raw Input:</strong><br>
+                    <textarea readonly>${test.input}</textarea>
+                </div>
+                <div>
+                    <strong>Sanitized Output:</strong><br>
+                    <textarea readonly>${sanitized}</textarea>
+                </div>
+            </div>
+            <div class="result-area">
+                <strong>Render Result:</strong>
+                <div class="mermaid" id="mermaid-${index}">${sanitized}</div>
+            </div>
+        `;
+            container.appendChild(testDiv);
+        });
+
+        // Initialize Mermaid
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+
+</body>
+
+</html>

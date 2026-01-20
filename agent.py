@@ -72,11 +72,16 @@ def agent(user_message, chat_history):
         3. Explain strictly but friendly.
         
         DIAGRAMMING RULES (CRITICAL):
-        - Use `graph TD` or `sequenceDiagram`.
-        - Node IDs: NO spaces (e.g., `id["Label"]`).
-        - Strings: ALWAYS double quotes.
-        - NO special chars in IDs.
-        - For Sequence Diagrams: Use "participant Alias as Label". DO NOT use "participant Alias["Label"]".
+        - **FOR FLOWCHARTS (`graph TD`)**:
+            - Use `-->|Label|` for arrows.
+            - IDs must be alphanumeric.
+        - **FOR SEQUENCE DIAGRAMS (`sequenceDiagram`)**:
+            - Use `A->>B: Message` (Colon syntax).
+            - **NEVER** use `-->|Label|` in sequence diagrams.
+            - **NEVER** use `Note over A,B,C` (Max 2 participants like `Note over A,B`).
+        - **GENERAL**:
+            - Strings: ALWAYS double quotes.
+            - No `|>` at end of arrows.
         
         Conversation:
         {history_text}

@@ -14,8 +14,13 @@
 *   **💾 Hybrid Storage System**: unique **Dual-Layer Persistence** architecture:
     *   **Primary**: Saves chat history to **MongoDB Atlas**.
     *   **Fallback**: Automatically switches to **Local File Storage** (`chat_history.json`) if the database connection drops, ensuring no data is ever lost.
-*   **📊 Dynamic Visualizations**: Automatically generates **Mermaid.js** diagrams (Flowcharts, Sequence diagrams) to visualize algorithms like Process Scheduling or Deadlocks.
+*   **🤝 Llama + RAG Handshake**: Seamlessly orchestrates general reasoning (Llama 3) with specific Textbook knowledge (FAISS Vector Store). if the query is technical (e.g., "Page Tables"), it retrieves context chunks and feeds them into the system prompt, ensuring the AI answers *from the book*.
+*   **📊 Diagram Generation (Mermaid.js)**: Turns complex processes into visual flowcharts on the fly. The AI generates Mermaid syntax, which the frontend sanitizes and renders instantly. (Previously referred to as "Migrane" image generation). 
+*   **💾 Smart Session Management**: 
+    *   **New Chat**: Instantly spawn fresh contexts.
+    *   **Deletion Options**: Easily manage your workspace by deleting old or irrelevant chat sessions.
 *   **⚡ High Performance**: Uses **Groq's LPU** for near-instant inference speeds.
+*   **🛡️ Robust Error Handling**: Includes self-healing sanitizers for diagram syntax to ensure visuals always render correctly.
 
 ---
 
