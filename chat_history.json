@@ -1,1 +1,27 @@
-{}
+{
+  "a449e6e0-2c3e-4ec6-9d9c-00393d53f111": {
+    "title": "say fcfs with diagram...",
+    "timestamp": 1768887950.3474085,
+    "last_active": "2026-01-20 05:45:50.347408+00:00",
+    "messages": [
+      {
+        "role": "user",
+        "content": "say fcfs with diagram"
+      },
+      {
+        "role": "ai",
+        "content": "FCFS stands for First-Come-First-Served, a simple scheduling algorithm used in Operating Systems. It's a non-preemptive algorithm, meaning that once a process is allocated to the CPU, it will run until it's completed.\n\nHere's how FCFS works:\n\n1. The operating system maintains a queue of processes that are waiting to be executed.\n2. The process that arrives first in the queue is executed first.\n3. The process runs until it's completed, at which point the next process in the queue is executed.\n\nNow, let's visualize this with a diagram using Mermaid.js:\n```mermaid\ngraph TD\n    id1[\"Process 1\"] -->|Arrives|> id2[Queue]\n    id3[\"Process 2\"] -->|Arrives|> id2\n    id4[\"Process 3\"] -->|Arrives|> id2\n    id2 -->|Executes|> id5[\"CPU\"]\n    id5 -->|Completes|> id6[\"Process 1 Finished\"]\n    id2 -->|Executes|> id7[\"CPU\"]\n    id7 -->|Completes|> id8[\"Process 2 Finished\"]\n    id2 -->|Executes|> id9[\"CPU\"]\n    id9 -->|Completes|> id10[\"Process 3 Finished\"]\n```\nIn this diagram, `id1`, `id3`, and `id4` represent the processes arriving in the queue (`id2`). The queue then executes each process in the order they arrived, with the CPU (`id5`, `id7`, `id9`) running each process until it's completed.\n\nNote that FCFS is a simple algorithm, but it can lead to poor performance if a long-running process is executed first, causing other processes to wait for an extended period."
+      }
+    ],
+    "id": "a449e6e0-2c3e-4ec6-9d9c-00393d53f111",
+    "user_id": "user_z2655m3gt"
+  },
+  "20758418-a972-46bf-8280-5edf3ba269ca": {
+    "title": "New Chat",
+    "timestamp": 1768888172.6070592,
+    "last_active": "2026-01-20 05:49:32.607059+00:00",
+    "messages": [],
+    "id": "20758418-a972-46bf-8280-5edf3ba269ca",
+    "user_id": "user_z2655m3gt"
+  }
+}

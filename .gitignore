@@ -35,3 +35,5 @@ faiss_index_v*/
 faiss_index/
 uploaded_images/
 static/extracted_images/
+
+chat_history.json

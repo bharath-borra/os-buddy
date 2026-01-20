@@ -12,4 +12,5 @@ pymupdf4llm
 python-dotenv
 requests
 sentence-transformers
+pypdf
 certifi
