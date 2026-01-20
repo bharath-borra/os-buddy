@@ -273,38 +273,44 @@ function appendMessage(type, text) {
     container.scrollTop = container.scrollHeight;
 
     // 5. Run Mermaid
+    // 5. Run Mermaid (Robust)
     if (type === 'ai-message' && typeof mermaid !== 'undefined') {
-        try {
-            mermaid.run({
-                nodes: msgDiv.querySelectorAll('.mermaid')
-            });
-        } catch (err) {
-            console.error("Mermaid Render Error:", err);
-            // Fallback: Show user friendly message + code
-            msgDiv.querySelectorAll('.mermaid').forEach(el => {
-                const rawCode = el.textContent;
-                el.style.display = 'none'; // Hide broken div
+        (async () => {
+            const nodes = [...msgDiv.querySelectorAll('.mermaid')];
+            const validNodes = [];
 
-                // Create fallback container
-                const errorDiv = document.createElement('div');
-                errorDiv.style.color = '#ef4444';
-                errorDiv.style.padding = '10px';
-                errorDiv.style.border = '1px solid #ef4444';
-                errorDiv.style.borderRadius = '8px';
-                errorDiv.style.marginTop = '10px';
-                errorDiv.innerHTML = `<strong>⚠️ Diagram Error</strong><br><small>We couldn't draw the chart, but here is the data:</small>`;
+            for (const el of nodes) {
+                try {
+                    // Pre-validate to avoid red syntax error boxes
+                    await mermaid.parse(el.textContent);
+                    validNodes.push(el);
+                } catch (err) {
+                    console.error("Mermaid Parse Error:", err);
 
-                const pre = document.createElement('pre');
-                pre.style.background = 'rgba(0,0,0,0.3)';
-                pre.style.padding = '10px';
-                pre.style.marginTop = '5px';
-                pre.style.overflowX = 'auto';
-                pre.textContent = rawCode;
+                    // Fallback UI
+                    el.style.display = 'none';
 
-                errorDiv.appendChild(pre);
-                el.parentNode.appendChild(errorDiv); // Inject fallback
-            });
-        }
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'mermaid-error';
+                    errorDiv.style.cssText = 'color: #ef4444; padding: 10px; border: 1px solid #ef4444; border-radius: 8px; margin-top: 10px;';
+                    errorDiv.innerHTML = `<strong>⚠️ Diagram Error</strong><br><small>The AI generated invalid syntax. Here is the raw code:</small>`;
+
+                    const pre = document.createElement('pre');
+                    pre.style.cssText = 'background: rgba(0,0,0,0.3); padding: 10px; margin-top: 5px; overflow-x: auto; white-space: pre-wrap;';
+                    pre.textContent = el.textContent;
+
+                    errorDiv.appendChild(pre);
+                    el.parentNode.insertBefore(errorDiv, el.nextSibling);
+                    el.classList.remove('mermaid');
+                }
+            }
+
+            if (validNodes.length > 0) {
+                try {
+                    await mermaid.run({ nodes: validNodes });
+                } catch (e) { console.error("Mermaid Run Failed:", e); }
+            }
+        })();
     }
 
     return msgDiv.id;

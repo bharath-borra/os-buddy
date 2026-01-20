@@ -42,8 +42,9 @@ def agent(user_message, chat_history):
         DIAGRAM GENERATION RULES:
         1. If key concepts are discussed, generate a Mermaid.js diagram.
         2. SYNTAX "GOLDEN RULES" (CRITICAL):
-           - ALWAYS use double codes for node labels: `id["Label Text"]`. NEVER `id[Label Text]`.
-           - AVOID special characters inside quotes if possible.
+           - ALWAYS use double QUOTES for node labels: `id["Label Text"]`. NEVER `id[Label Text]`.
+           - Node IDs must NOT contain spaces or special chars. Use `node1` not `node 1`.
+           - AVOID special characters inside quotes if possible. Encode if necessary.
            - Use `graph TD` (Top-Down) or `graph LR` (Left-Right) for flows.
            - Use `sequenceDiagram` for steps.
            - FOR GANTT CHARTS (Scheduling):
